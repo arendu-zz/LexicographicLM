@@ -28,7 +28,6 @@ def add_arc_pr(sym, lmfst, fid, tid, isy, osy, wt):
 
 if __name__ == '__main__':
     sym_e = fst.read_symbols('data/syme.bin')
-    pdb.set_trace()
     lm_txt = open('data/lm', 'r').read()
     [bs, unigrams, bigrams, trigrams] = re.split('1-grams:|2-grams:|3-grams:', lm_txt)
     unigrams = re.split('\n+', unigrams)
@@ -90,6 +89,11 @@ if __name__ == '__main__':
             from_id = lm_id[ng1, ng2]
             to_id = lm_id[ng2, ng3]
             add_arc_pr(sym_e, lm_fst, from_id, to_id, ng3, ng3, p)
+            #adding code to handle the case where the bigram context ng2,ng3 exists
+            #backing off from ng2,ng3 -> ng3 via a 0.0 prob backoff
+            bk_to_id = lm_id[ng3]
+            add_arc_pr(sym_e, lm_fst, to_id, bk_to_id, sym_e.find(0), sym_e.find(0), 0.0)
+
             if ng3 == '</s>':
                 lm_fst[lm_id[ng2, ng3]].final = True
 
@@ -97,7 +101,7 @@ if __name__ == '__main__':
     #connect init to start
 
     add_arc_pr(sym_e, lm_fst, lm_id[INITIAL], lm_id[NULL], sym_e.find(0), sym_e.find(0), 0.0)
-    lm_fst.write('data/pylm.fst', sym_e, sym_e)
+    lm_fst.write('data/explm-new.fst', sym_e, sym_e)
     """
     99 <s> -1.640621
      9 -2.411867   </s>

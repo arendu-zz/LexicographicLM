@@ -46,8 +46,8 @@ void push_arparow(string_vector vec, arpa_vector *gram) {
     if (vec.size() > 1) {
         arparow arow = make_arparow(vec);
         gram->push_back(arow);
-    }else{
-      cout <<" ignoring row"<<endl;
+    } else {
+        cout << " ignoring row" << endl;
     }
 }
 
@@ -64,7 +64,7 @@ int main(int argc, char *argv[]) {
     arpa_vector trigram;
     while (getline(ifs, line)) {
         trim(line);
-        cout<<line<<endl;
+        cout << line << endl;
         if (iequals(line, "")) {
             cout << "uigrams:" << unigram.size() << " bigrams:" << bigram.size() << " trigrams:" << trigram.size() << endl;
         } else {
@@ -133,9 +133,9 @@ int main(int argc, char *argv[]) {
             cout << " look up to id:" << to_id << endl;
         }
         cout << "from id:" << from_id << " to id" << to_id << endl;
-        
-    cout<<"finding "<<it->gram<< syms->Find(it->gram);
-    cout<<"finding "<<it->gram<< syms->Find(it->gram.c_str());
+
+        cout << "finding " << it->gram << syms->Find(it->gram);
+        cout << "finding " << it->gram << syms->Find(it->gram.c_str());
         lm_fst.AddArc(from_id, fst::StdArc(syms->Find(it->gram.c_str()), syms->Find(it->gram.c_str()), it->logprob, to_id));
         lm_fst.AddArc(to_id, fst::StdArc(0, 0, it->bkprob, from_id));
         if (boost::iequals(it->gram, string("</s>"))) {
@@ -191,16 +191,20 @@ int main(int argc, char *argv[]) {
 
         lm_fst.AddArc(from_id, fst::StdArc(syms->Find(ng3.c_str()), syms->Find(ng3.c_str()), it->logprob, to_id));
         //Wait a min! do we have to add an arc back to null?
+        int bk_to_id = lm_id.find(ng3)->second;
+        lm_fst.AddArc(to_id, fst::StdArc(0, 0, 0.0, bk_to_id));
         if (boost::iequals(ng3, string("</s>"))) {
             lm_fst.SetFinal(to_id, 0.0);
         }
     }
-    cout<<"COMPLETED GRAMS"<<endl;
+    cout << "COMPLETED GRAMS" << endl;
     int from_id = lm_id.find("_INITIAL_")->second;
     int to_id = lm_id.find("_NULL_")->second;
-    lm_fst.AddArc(from_id, fst::StdArc(0,0,0.0,to_id));
+    lm_fst.AddArc(from_id, fst::StdArc(0, 0, 0.0, to_id));
     lm_fst.Write("data/cpplm.fst");
 }
+
+
 
 
 
