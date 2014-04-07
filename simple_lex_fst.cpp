@@ -41,6 +41,9 @@ int main(int argc, char *argv[]) {
     l_fst.SetFinal(end_id, final_w);
     
     l_fst.Write("simple_lex.fst");
+
+   fst::VectorFst<LexArc> *r_fst;
+   r_fst->Read("simple_lex.fst");
 }
 
 
